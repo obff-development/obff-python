@@ -19,12 +19,47 @@ optional arguments:
 
 ```
 
+## Quickinfo
+```yaml
+obffpy quickinfo --file <path_to_obf_file>
+```
+### Output
+```
+Quicinfo about: <file_name>
+.............
+       Title: <title>
+ Description: <description>
+       Cover: <file_type> - <file_size>
+       Pages: <num_pages>
+```
+
+## Unpack
+```yaml
+obffpy unpack [-h] --file <path_to_obf_file> -ef <export_folder_path>
+```
+### Output
+```
+Reading file...
+Extracting and saveing cover...
+Creating "pages" directory...
+Extracting and saveing pages...
+Generating book.json...
+Done
+
+<path_to_given_export_folder>
+├── cover.jpeg
+├── meta.json
+└── pages (<page_count> File(s))
+
+``` 
+
+
 ## Pack
 ```yaml
-obffpy pack --file <export_filepath> --meta <book_meta_file>
+obffpy pack --saveFile <path_or_filename> --metaFile <book_meta_file>
 ```
 Every path used in the metafile file, must be in the same folder as the metafile it self.
-### Structure
+### Structure Example
 ```
 MyBook
 ├── meta.json
