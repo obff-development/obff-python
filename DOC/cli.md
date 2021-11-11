@@ -23,6 +23,16 @@ optional arguments:
 ```yaml
 obffpy pack --file <export_filepath> --meta <book_meta_file>
 ```
+Every path used in the metafile file, must be in the same folder as the metafile it self.
+### Structure
+```
+MyBook
+├── meta.json
+├── cover.jpg
+├── p1.jpg
+└── some_folder
+    └── p2.jpg
+```
 ### Book Meta File
 ```json
 {
@@ -34,13 +44,4 @@ obffpy pack --file <export_filepath> --meta <book_meta_file>
         "some_folder/p2.jpg"
     ]
 }
-```
-### Structure
-```
-MyBook
-├── meta.json
-├── cover.jpg
-├── p1.jpg
-└── some_folder
-    └── p2.jpg
 ```
