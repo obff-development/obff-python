@@ -21,14 +21,20 @@ sp_cmd_unpack.add_argument("-sd", "--saveDir", type=str, required=True, help="Di
 
 sp_cmd_pack = subparsers.add_parser('pack', help='Packs data to a OBF File')
 sp_cmd_pack.set_defaults(cmd = 'pack')
-sp_cmd_pack.add_argument("-t", "--title", type=str, required=True, help="Description for book")
-sp_cmd_pack.add_argument("-d", "--description", type=str, required=True, help="Description for book")
-sp_cmd_pack.add_argument("--file", type=str, required=True, help="Export path/file")
-sp_cmd_pack.add_argument("-c", "--cover", type=str, required=True, help="Path to cover image")
-sp_cmd_pack.add_argument("-p", "--pages", type=str, required=True, help="Directory containing pages files (labled 1, 2 etc.)")
-
+sp_cmd_pack.add_argument("--file", type=str, required=True, help="Path to export dir")
+sp_cmd_pack.add_argument("--meta", type=str, required=True, help="Path to a \"book.json\"")
 
 args = parser.parse_args()
+
+def isAbsolute(path: str) -> bool:
+    return os.path.isabs(path)
+
+def prompt(text: str) -> str:
+    ret = input(text + ": ")
+    if ret == "":
+        return prompt(text)
+
+    return ret
 
 # Quickinformation about a OBF File
 def quicky(path: str):
@@ -98,7 +104,7 @@ def unpack(src_path: str, exp_path: str):
         "pages": fn_pages
     }
 
-    book_meta = open(os.path.join(exp_path, "book.json"), "w")
+    book_meta = open(os.path.join(exp_path, "meta.json"), "w")
     book_meta.write(json.dumps(content))
     book_meta.close()
 
@@ -109,13 +115,49 @@ def unpack(src_path: str, exp_path: str):
     lines_ = [
         exp_path,
         "├── {0}".format(fn_cover),
-        "├── book.json",
+        "├── meta.json",
         "└── pages ({0} File(s))".format(len(pages_fc))
     ]
 
     print("\n".join(lines_))
 
+def pack(exp_path: str, meta_path: str):
+    if not os.path.isfile(meta_path):
+        print("Given \"meta json\" path is not a file")
+        return
 
+    dirfoler = os.path.dirname(meta_path)
+
+    book = obff.Book()
+    metadata = json.loads(open(meta_path, "r").read())
+    if "title" in metadata:
+        book.title = metadata["title"]
+    else:
+        print("Metafiel misses parameter \"title\"")
+
+    if "description" in metadata:
+        book.description = metadata["description"]
+    else:
+        print("Metafiel misses parameter \"description\"")
+
+    if "cover" in metadata:
+        cover_path = metadata["cover"] if isAbsolute(metadata["cover"]) else os.path.join(dirfoler, metadata["cover"])
+        book.cover = obff.Cover(open(cover_path, "rb").read())
+    else:
+        print("Metafiel misses parameter \"cover\"")
+
+    if "pages" in metadata:
+        for page in metadata["pages"]:
+            img_path = os.path.join(dirfoler, page)
+            if not os.path.isfile(img_path):
+                print("Image \"{0}\" not found, skipping".format(img_path))
+                continue
+
+            book.addPage(obff.Page(open(img_path, "rb").read()))
+    else:
+        print("Metafiel misses parameter \"pages\"")
+
+    obff.write(exp_path, book)
 
 def start():
     if args.version:
@@ -127,14 +169,17 @@ def start():
         return
 
     if args.cmd == "quickinfo":
-        quicky(os.path.join(os.getcwd(), args.file))
+        path = args.file if isAbsolute(args.file) else os.path.join(os.getcwd(), args.file)
+        quicky(path)
 
 
     elif args.cmd == "unpack":
-        path_src_file = os.path.join(os.getcwd(), args.file)
-        path_exp_dir = os.path.join(os.getcwd(), args.saveDir)
+        path_src_file = args.file if isAbsolute(args.file) else os.path.join(os.getcwd(), args.file)
+        path_exp_dir = args.saveDir if isAbsolute(args.saveDir) else os.path.join(os.getcwd(), args.saveDir)
 
         unpack(path_src_file, path_exp_dir)
-
     elif args.cmd == "pack":
-        pass
+        path = args.file if isAbsolute(args.file) else os.path.join(os.getcwd(), args.file)
+        path_meta = args.meta if isAbsolute(args.meta) else os.path.join(os.getcwd(), args.meta)
+
+        pack(path, path_meta)
