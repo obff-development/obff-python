@@ -17,12 +17,12 @@ sp_cmd_quicinfo.add_argument("--file", type=str, required=True, help="OBF File t
 sp_cmd_unpack = subparsers.add_parser('unpack', help='Unpacks a OBF File')
 sp_cmd_unpack.set_defaults(cmd = 'unpack')
 sp_cmd_unpack.add_argument("--file", type=str, required=True, help="OBF File to extract from")
-sp_cmd_unpack.add_argument("-sd", "--saveDir", type=str, required=True, help="Directory where pages will be saved to")
+sp_cmd_unpack.add_argument("-ef", "--exportFolder", type=str, required=True, help="Directory where pages will be saved to")
 
 sp_cmd_pack = subparsers.add_parser('pack', help='Packs data to a OBF File')
 sp_cmd_pack.set_defaults(cmd = 'pack')
-sp_cmd_pack.add_argument("--file", type=str, required=True, help="Path to export dir")
-sp_cmd_pack.add_argument("--meta", type=str, required=True, help="Path to a \"book.json\"")
+sp_cmd_pack.add_argument("-sf", "--saveFile", type=str, required=True, help="Path to export dir")
+sp_cmd_pack.add_argument("-mf", "--metaFile", type=str, required=True, help="Path to a \"book.json\"")
 
 args = parser.parse_args()
 
@@ -175,11 +175,12 @@ def start():
 
     elif args.cmd == "unpack":
         path_src_file = args.file if isAbsolute(args.file) else os.path.join(os.getcwd(), args.file)
-        path_exp_dir = args.saveDir if isAbsolute(args.saveDir) else os.path.join(os.getcwd(), args.saveDir)
+        path_exp_dir = args.exportFolder if isAbsolute(args.exportFolder) else os.path.join(os.getcwd(), args.exportFolder)
 
         unpack(path_src_file, path_exp_dir)
+        
     elif args.cmd == "pack":
-        path = args.file if isAbsolute(args.file) else os.path.join(os.getcwd(), args.file)
-        path_meta = args.meta if isAbsolute(args.meta) else os.path.join(os.getcwd(), args.meta)
+        path = args.saveFile if isAbsolute(args.saveFile) else os.path.join(os.getcwd(), args.saveFile)
+        path_meta = args.metaFile if isAbsolute(args.metaFile) else os.path.join(os.getcwd(), args.metaFile)
 
         pack(path, path_meta)
