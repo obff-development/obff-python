@@ -57,7 +57,7 @@ class Cover:
         return self._bytes
 
 class Page:
-    def __init__(self, content: bytes = b'', number: int = None):
+    def __init__(self, content: bytes,  number: int = None):
         """Page
         """
 
@@ -73,6 +73,7 @@ class Page:
         """
         return len(self._content)
 
+
     @property
     def content(self) -> bytes:
         """Get page bytes
@@ -82,6 +83,7 @@ class Page:
         """
 
         return self._content
+
 
     @property
     def number(self) -> int:
@@ -98,16 +100,6 @@ class Page:
         """Set number of Page
 
         args:
-            number (int): Number of Page
-        """
-
-        self._number = number
-
-    @number.setter
-    def number(self, number: int):
-        """Set number of Page
-
-        Args:
             number (int): Number of Page
         """
 

@@ -1,4 +1,4 @@
-__version_tuple__ = ("1", "0", "0")
+__version_tuple__ = ("1", "0", "1")
 
 __obff_cv__ = b'\x4f\x42\x46\x46\x31\x30\x00\x00' # Current OBFF version
 
